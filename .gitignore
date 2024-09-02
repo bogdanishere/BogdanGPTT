@@ -1,0 +1,22 @@
+# Ignore environment files
+.env
+.env.local
+
+# Ignore node_modules directories
+node_modules/
+
+# Ignore log files
+npm-debug.log
+yarn-error.log
+
+# Ignore build outputs
+dist/
+build/
+.next/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore TypeScript cache
+.turbo/
