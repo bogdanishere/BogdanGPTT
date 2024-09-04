@@ -1,14 +1,100 @@
 "use client";
+
 import React, { FormEvent, useState } from "react";
+
+interface ThreadProps {
+  id: string;
+  object: string;
+  created_at: number;
+  metadata: object;
+  tool_resources: object;
+}
+
+interface AssistantProps {
+  id: string;
+  object: string;
+  created_at: number;
+  name: string;
+  description: string | null;
+  model: string;
+  instructions: string;
+  tools: Array<object>;
+  top_p: number;
+  temperature: number;
+  tool_resources: object;
+  metadata: object;
+  response_format: string;
+}
+
+interface FileObjectProps {
+  object: string;
+  id: string;
+  purpose: string;
+  filename: string;
+  bytes: number;
+  created_at: number;
+  status: string;
+  status_details: string | null;
+}
+
+interface MessageResponse {
+  messages: string;
+  threadCreatedBefore: ThreadProps;
+  assistantCreatedBefore: AssistantProps;
+  idFilesCreatedBefore: FileObjectProps[];
+}
 
 interface MessageProps {
   role: "user" | "assistant";
   content: string;
 }
 
+interface ThreadProps {
+  id: string;
+  object: string;
+  created_at: number;
+  metadata: object;
+  tool_resources: object;
+}
+
+interface AssistantProps {
+  id: string;
+  object: string;
+  created_at: number;
+  name: string;
+  description: string | null;
+  model: string;
+  instructions: string;
+  tools: Array<object>;
+  top_p: number;
+  temperature: number;
+  tool_resources: object;
+  metadata: object;
+  response_format: string;
+}
+
+interface FileObjectProps {
+  object: string;
+  id: string;
+  purpose: string;
+  filename: string;
+  bytes: number;
+  created_at: number;
+  status: string;
+  status_details: string | null;
+}
+
+interface MessageResponse {
+  messages: string;
+  threadCreatedBefore: ThreadProps;
+  assistantCreatedBefore: AssistantProps;
+  idFilesCreatedBefore: FileObjectProps[];
+}
+
 export default function FormChat() {
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState<MessageProps[]>([]);
+  const [threadInfo, setThreadInfo] = useState<ThreadProps | null>(null);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -34,14 +120,16 @@ export default function FormChat() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          actualQuestion: question,
-          oldContent: newMessages,
+          question,
+          threadCreatedBefore: threadInfo,
         }),
       });
 
-      const data = await res.json();
+      const data: MessageResponse = await res.json();
 
-      const formattedResponse = data.response
+      setThreadInfo(data.threadCreatedBefore);
+
+      const formattedResponse = data.messages
         .replace(/###/g, "<br/><strong>")
         .replace(/\*\*/g, "</strong>")
         .replace(/\n/g, "<br/>")
@@ -97,13 +185,13 @@ export default function FormChat() {
         <textarea
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
-          className="mt-5 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 bg-[#F7EAD9] focus:ring-[#FF7E5F] text-black" // Use #FF7E5F for the focus ring
+          className="mt-5 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 bg-[#F7EAD9] focus:ring-[#FF7E5F] text-black"
           rows={4}
           placeholder="Enter your question..."
         />
         <button
           type="submit"
-          className="bg-[#FF7E5F] text-grey-300 py-2 rounded-lg hover:bg-[#FF9066]" // Button with #FF7E5F background and hover effect
+          className="bg-[#FF7E5F] text-grey-300 py-2 rounded-lg hover:bg-[#FF9066]"
         >
           Ask
         </button>
